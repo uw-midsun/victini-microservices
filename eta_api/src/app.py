@@ -1,43 +1,31 @@
 import os
 from flask import Flask, request, jsonify
-from eta_api.src.eta import ETAQuery  # Import the ETAQuery class from eta.py
-from eta_api.src.models import db, User  # Import the db and User models from models.py
-from flask_migrate import Migrate
+from . import create_app, db
+from .models import ETA
 
-# Initialize Flask app
-app = Flask(__name__)
+app = create_app(os.getenv("FLASK_ENV"))
 
-# Configuration
-app.config.from_object(os.environ['APP_SETTINGS'])
-db.init_app(app)
-migrate = Migrate(app, db)
+@app.route("/add_eta", methods=["POST"])
+def add_eta():
+    data = request.get_json()
+    lat = data.get("lat")
+    long = data.get("long")
+    eta = data.get("eta")
 
-# Define routes
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        lat = float(request.form['lat'])
-        lon = float(request.form['lon'])
+    if lat is None or long is None or eta is None:
+        return jsonify({"error": "Invalid data"}), 400
 
-        # Calculate ETA using ETAQuery
-        eta_query = ETAQuery(lat, lon)
-        times = eta_query.get_times()
+    eta_entry = ETA(lat=lat, long=long, eta=eta)
+    db.session.add(eta_entry)
+    db.session.commit()
 
-        # Return ETA as JSON
-        return jsonify({'eta': times})
+    return jsonify({"message": "ETA added successfully"}), 201
 
-    return 'Welcome to the ETA Service'
+@app.route("/get_eta", methods=["GET"])
+def get_eta():
+    etas = ETA.query.all()
+    eta_list = [{"lat": eta.lat, "long": eta.long, "eta": eta.eta} for eta in etas]
+    return jsonify({"etas": eta_list})
 
-@app.route('/users', methods=['POST'])
-def create_user():
-    name = request.json.get('name')
-    if name:
-        user = User(name=name)
-        db.session.add(user)
-        db.session.commit()
-        return jsonify({'message': 'User created successfully'})
-    else:
-        return jsonify({'error': 'Name is required'}), 400
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
