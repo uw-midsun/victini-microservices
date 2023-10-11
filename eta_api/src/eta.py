@@ -60,7 +60,7 @@ class ETAQuery():
             a = self.ckpt_to_route_model_index[next_closest_checkpoint]
             b = self.ckpt_to_route_model_index[future_checkpoint]
 
-            print(self.route_model.iloc[b]['trip(m)'])
+            print(self.route_model.iloc[b]['trip(m)'], "\n")
 
             # Unit conversion is to put meters into kilometers and time into minutes
             eta_next_to_future = ((self.route_model.iloc[b]['trip(m)'] - self.route_model.iloc[a]['trip(m)'])/1000) / self.speed * 60
@@ -82,3 +82,17 @@ class ETAQuery():
         """
         closest_point = self.find_closest_point(lat, lon)
         return self.eta[closest_point['checkpoint']]
+    
+if __name__ == "__main__":
+    # Example test cases
+
+    # Create an instance of ETAQuery with a specific location (latitude and longitude).
+    eta_query = ETAQuery(lat=40.7128, lon=-74.0060)  # Example coordinates are for New York City.
+
+    # Calculate ETAs and retrieve them
+    etas = eta_query.get_times()
+    print("Estimated Times of Arrival at Checkpoints:", etas)
+
+    # Calculate ETA to a different point
+    eta_to_point = eta_query.get_time_to_point(40.730610, -73.935242)  # Example coordinates for another location in NYC.
+    print("Estimated Time of Arrival to a Point:", eta_to_point)
