@@ -4,7 +4,7 @@ sys.path.append(os.path.dirname(sys.path[0]))
 
 import pandas as pd
 from geopy.distance import distance as geodist
-import math  # Import the math module
+import math  
 
 class ETAQuery():
     def __init__(self, lat, lon):
@@ -32,43 +32,6 @@ class ETAQuery():
 
         distances = self.route_model.apply(lambda row: geodist((lat, lon), (row['latitude'], row['longitude'])).meters, axis=1)
         return self.route_model.iloc[distances.idxmin()]
-        
-    # def generate_eta(self):
-    #     """
-    #     @return: a list of float values representing the time it takes to reach the checkpoints
-    #     """
-    #     closest_point = self.find_closest_point(self.lat, self.lon)
-    #     current_checkpoint = closest_point['checkpoint']
-    #     next_closest_checkpoint = current_checkpoint + 1
-
-    #     n = len(self.checkpoint_coords)
-    #     eta = [-1.0 for _ in range(n)]
-
-    #     if next_closest_checkpoint >= n:
-    #         self.eta = eta
-    #         return self.eta
-
-    #     slat = self.lat
-    #     slon = self.lon
-    #     elat = self.checkpoint_coords[next_closest_checkpoint][0]
-    #     elon = self.checkpoint_coords[next_closest_checkpoint][1]
-
-    #     dist_to_next_checkpoint = geodist((slat, slon), (elat, elon)).meters
-    #     # Unit conversion is to put meters into kilometers and time into minutes
-    #     eta[next_closest_checkpoint] = (dist_to_next_checkpoint / 1000) / self.speed * 60
-
-    #     for future_checkpoint in range(next_closest_checkpoint + 1, n):
-    #         a = self.ckpt_to_route_model_index[next_closest_checkpoint]
-    #         b = self.ckpt_to_route_model_index[future_checkpoint]
-
-    #         print(self.route_model.iloc[b]['trip(m)'])
-
-    #         # Unit conversion is to put meters into kilometers and time into minutes
-    #         eta_next_to_future = ((self.route_model.iloc[b]['trip(m)'] - self.route_model.iloc[a]['trip(m)']) / 1000) / self.speed * 60
-    #         eta[future_checkpoint] = eta[next_closest_checkpoint] + float(eta_next_to_future.iloc[0])
-
-    #     self.eta = eta
-    #     return eta
 
     def generate_eta(self):
         """
@@ -79,7 +42,9 @@ class ETAQuery():
         next_closest_checkpoint = current_checkpoint + 1
 
         n = len(self.checkpoint_coords)
-        eta = [-1.0 for _ in range(n)]
+
+        # Modified to instantiate eta list with -1.0 instead of -1 since returne eta will be a float
+        eta = [-1.0 for _ in range(n)] 
 
         if next_closest_checkpoint >= n:
             self.eta = eta
@@ -104,6 +69,7 @@ class ETAQuery():
             eta_next_to_future = ((self.route_model.iloc[b]['trip(m)'] - self.route_model.iloc[a]['trip(m)']) / 1000) / self.speed * 60
             eta_value = eta[next_closest_checkpoint] + float(eta_next_to_future.iloc[0])
 
+            # Additional check for NaN -> leave it as -1.0 in the list
             if not math.isnan(eta_value):
                 eta[future_checkpoint] = eta_value
 
@@ -115,6 +81,7 @@ class ETAQuery():
         @return: a list of float values representing the time it takes to reach the checkpoints
         """
         return self.eta
+    
     
     def get_time_to_point(self, lat, lon):
         """
