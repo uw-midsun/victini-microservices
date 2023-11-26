@@ -47,12 +47,12 @@ def calculate_eta():
         # Insert a new row with lat, lon, and calculated eta (in mins)
         with connection.cursor() as cursor:
             # Find the maximum id in the table (ie. newest row) -> if no checkpoints, instantiate with 0
-            cursor.execute("SELECT MAX(id) FROM eta.checkpoints")
+            cursor.execute("SELECT MAX(id) FROM public.checkpoints")
             max_id = cursor.fetchone()[0] or 0 
 
             # Insert the new row with an incremented id
             cursor.execute(
-                "INSERT INTO eta.checkpoints (id, lat, lon, eta) VALUES (%s, %s, %s, %s)",
+                "INSERT INTO public.checkpoints (id, lat, lon, eta) VALUES (%s, %s, %s, %s)",
                 (max_id + 1, lat, lon, eta_values)
             )
             connection.commit()
@@ -65,4 +65,4 @@ def calculate_eta():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=6000)
+    app.run(host='0.0.0.0', port=6000) 
