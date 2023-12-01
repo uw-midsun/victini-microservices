@@ -43,7 +43,7 @@ class ETAQuery():
 
         n = len(self.checkpoint_coords)
 
-        # Modified to instantiate eta list with -1.0 instead of -1 since returne eta will be a float
+        # Modified to instantiate eta list with -1.0 instead of -1 since returned eta will be a float
         eta = [-1.0 for _ in range(n)] 
 
         if next_closest_checkpoint >= n:
@@ -59,8 +59,8 @@ class ETAQuery():
         # Unit conversion is to put meters into kilometers and time into minutes
         eta[next_closest_checkpoint] = (dist_to_next_checkpoint / 1000) / self.speed * 60
 
-        for future_checkpoint in range(next_closest_checkpoint + 1, n):
-            a = self.ckpt_to_route_model_index[next_closest_checkpoint]
+        for future_checkpoint in range(next_closest_checkpoint + 1, n): 
+            a = self.ckpt_to_route_model_index[next_closest_checkpoint][0] 
             b = self.ckpt_to_route_model_index[future_checkpoint]
 
             print(self.route_model.iloc[b]['trip(m)'])
@@ -89,3 +89,27 @@ class ETAQuery():
         """
         closest_point = self.find_closest_point(lat, lon)
         return self.eta[closest_point['checkpoint']]
+    
+if __name__ == "__main__":
+    # Sample coordinates for testing
+    test_lat = 42
+    test_lon = -79
+
+    # Instantiate ETAQuery
+    eta_query = ETAQuery(test_lat, test_lon)
+
+    # Test the closest point function
+    closest_point = eta_query.find_closest_point(test_lat, test_lon)
+    print("Closest Point:", closest_point)
+
+    # Test the generate_eta function
+    eta_query.generate_eta()
+    print("ETA List:", eta_query.eta)
+
+    # Test the get_times function
+    times = eta_query.get_times()
+    print("Times:", times)
+
+    # Test the get_time_to_point function
+    time_to_point = eta_query.get_time_to_point(test_lat, test_lon)
+    print("Time to Point:", time_to_point)
