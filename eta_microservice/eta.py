@@ -89,27 +89,3 @@ class ETAQuery():
         """
         closest_point = self.find_closest_point(lat, lon)
         return self.eta[closest_point['checkpoint']]
-    
-if __name__ == "__main__":
-    # Sample coordinates for testing
-    test_lat = 42
-    test_lon = -79
-
-    # Instantiate ETAQuery
-    eta_query = ETAQuery(test_lat, test_lon)
-
-    # Test the closest point function
-    closest_point = eta_query.find_closest_point(test_lat, test_lon)
-    print("Closest Point:", closest_point)
-
-    # Test the generate_eta function
-    eta_query.generate_eta()
-    print("ETA List:", eta_query.eta)
-
-    # Test the get_times function
-    times = eta_query.get_times()
-    print("Times:", times)
-
-    # Test the get_time_to_point function
-    time_to_point = eta_query.get_time_to_point(test_lat, test_lon)
-    print("Time to Point:", time_to_point)
