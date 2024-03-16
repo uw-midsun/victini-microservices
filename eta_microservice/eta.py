@@ -10,8 +10,12 @@ class ETAQuery():
     def __init__(self, lat, lon):
         self.lat = lat
         self.lon = lon
-        self.route_model = pd.read_csv(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../eta_microservice/data/route_model_db.csv')))
-        self.checkpoint_model = pd.read_csv(os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../eta_microservice/data/checkpoint_model_db.csv')))
+        route_model_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'eta_microservice', 'data', 'route_model_db.csv')) #changed it for interoperability between unix and windows
+        checkpoint_model_path = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'eta_microservice', 'data', 'checkpoint_model_db.csv'))
+        # Read CSV files
+        self.route_model = pd.read_csv(route_model_path)
+        self.checkpoint_model = pd.read_csv(checkpoint_model_path)
+
         self.checkpoint_coords = self.checkpoint_model.loc[:, ['latitude', 'longitude']].values.tolist()
         self.ckpt_to_route_model_index = self.checkpoint_model.loc[:, ['route_model_index']].values.tolist()
         self.eta_to_checkpoint = []
@@ -89,3 +93,6 @@ class ETAQuery():
         """
         closest_point = self.find_closest_point(lat, lon)
         return self.eta[closest_point['checkpoint']]
+    
+
+
