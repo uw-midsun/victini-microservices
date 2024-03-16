@@ -1,0 +1,3 @@
+43.46786317655638, -80.56637564010215
+
+This location can be used for testing purposes. Alternatively, any point from the route_model_db.csv in data folder can be used.
