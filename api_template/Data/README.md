@@ -1,0 +1,1 @@
+This folder is optional but if you have any data (eg. CSV) files that are needed, you should store them here in one folder
