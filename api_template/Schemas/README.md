@@ -1,0 +1,1 @@
+This Schemas folder should contain any SQL queries needed to setup your table so that it can receive data
